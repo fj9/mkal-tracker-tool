@@ -1,32 +1,18 @@
-# React + TypeScript + Vite
+# Knitting Clue Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Client-only Vite + React + TypeScript web app (installable PWA). Tick rows as you knit and see where you should be each day. Progress is stored on the device in IndexedDB.
 
-Currently, two official plugins are available:
+## Commands
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `npm run dev` – dev server (validates clues and regenerates the catalogue first)
+- `npm test` – Vitest (build checks, plan maths, progress store, helpers)
+- `npm run build` – private build (uses `clue.json` when present, else `clue.public.json`)
+- `npm run build:public` – `PUBLIC_BUILD=1`: public files only, then scans `dist/` and fails if any instruction text is found
 
-## React Compiler
+## Adding a clue
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Put the clue's `*_clue.public.json` in `content/clues/` and rebuild. Files sharing a `base_clue_id` become versions of one clue. The build fails with a clear message if any spec check fails or two files share a `clue_id`. Private `*_clue.json` files are git-ignored.
 
-## Expanding the Oxlint configuration
+## Layout
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+`src/data` types and loader · `src/lib` pure maths (`plan.ts`) · `src/state` progress store · `src/screens` Catalogue, Plan, Knit, Sections, Settings, Help · `content/help` help copy as markdown · `scripts` build-time validation and catalogue generation.

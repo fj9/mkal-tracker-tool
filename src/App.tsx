@@ -1,16 +1,15 @@
 import { Layout } from "./components/Layout";
 import { findVariant } from "./data/catalogue";
 import { hrefFor, useRoute } from "./router";
+import { Banners } from "./components/Banners";
+import { Welcome } from "./components/Welcome";
 import { Catalogue } from "./screens/Catalogue";
+import { Help } from "./screens/Help";
 import { Knit } from "./screens/Knit";
 import { Plan } from "./screens/Plan";
 import { Sections } from "./screens/Sections";
 import { Settings } from "./screens/Settings";
 import { StoreProvider } from "./state/AppContext";
-
-function Placeholder({ name }: { name: string }) {
-  return <p className="muted">{name} is coming next.</p>;
-}
 
 export function App() {
   const route = useRoute();
@@ -19,7 +18,7 @@ export function App() {
   let body;
   switch (route.name) {
     case "catalogue":
-      body = <Catalogue />;
+      body = <><Banners /><Catalogue /></>;
       break;
     case "settings":
       title = "Settings"; back = hrefFor.catalogue();
@@ -27,7 +26,7 @@ export function App() {
       break;
     case "help":
       title = "Help"; back = hrefFor.catalogue();
-      body = <Placeholder name="Help" />;
+      body = <Help />;
       break;
     default: {
       const found = findVariant(route.clueId);
@@ -39,6 +38,7 @@ export function App() {
   return (
     <StoreProvider>
       <Layout route={route} title={title} back={back}>{body}</Layout>
+      <Welcome />
     </StoreProvider>
   );
 }
