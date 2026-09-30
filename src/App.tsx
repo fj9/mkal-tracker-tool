@@ -2,6 +2,7 @@ import { Layout } from "./components/Layout";
 import { findVariant } from "./data/catalogue";
 import { hrefFor, useRoute } from "./router";
 import { Banners } from "./components/Banners";
+import { UpdatePrompt } from "./components/UpdatePrompt";
 import { Welcome } from "./components/Welcome";
 import { Catalogue } from "./screens/Catalogue";
 import { Help } from "./screens/Help";
@@ -39,6 +40,7 @@ export function App() {
     <StoreProvider>
       <Layout route={route} title={title} back={back}>{body}</Layout>
       <Welcome />
+      <UpdatePrompt />
     </StoreProvider>
   );
 }

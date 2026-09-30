@@ -16,3 +16,9 @@ Put the clue's `*_clue.public.json` in `content/clues/` and rebuild. Files shari
 ## Layout
 
 `src/data` types and loader · `src/lib` pure maths (`plan.ts`) · `src/state` progress store · `src/screens` Catalogue, Plan, Knit, Sections, Settings, Help · `content/help` help copy as markdown · `scripts` build-time validation and catalogue generation.
+
+## Hosting on GitHub Pages
+
+`.github/workflows/deploy.yml` runs the tests, builds with `PUBLIC_BUILD=1` (which also fails if any instruction text is in `dist/`) and deploys `dist/` on every push to `main`. In the repository settings, set Pages > Source to "GitHub Actions". The app uses relative asset paths and hash routes, so it works under `https://<user>.github.io/<repo>/` without extra config. Note that the public clue data in `content/clues/` is committed to the repository.
+
+Local check of what Pages will serve: `npm run build:public && npx vite preview --host`.
