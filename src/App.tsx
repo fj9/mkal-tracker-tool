@@ -5,6 +5,7 @@ import { Catalogue } from "./screens/Catalogue";
 import { Knit } from "./screens/Knit";
 import { Plan } from "./screens/Plan";
 import { Sections } from "./screens/Sections";
+import { Settings } from "./screens/Settings";
 import { StoreProvider } from "./state/AppContext";
 
 function Placeholder({ name }: { name: string }) {
@@ -22,7 +23,7 @@ export function App() {
       break;
     case "settings":
       title = "Settings"; back = hrefFor.catalogue();
-      body = <Placeholder name="Settings" />;
+      body = <Settings />;
       break;
     case "help":
       title = "Help"; back = hrefFor.catalogue();
