@@ -4,6 +4,7 @@ import { hrefFor, useRoute } from "./router";
 import { Catalogue } from "./screens/Catalogue";
 import { Knit } from "./screens/Knit";
 import { Plan } from "./screens/Plan";
+import { Sections } from "./screens/Sections";
 import { StoreProvider } from "./state/AppContext";
 
 function Placeholder({ name }: { name: string }) {
@@ -31,7 +32,7 @@ export function App() {
       const found = findVariant(route.clueId);
       title = found ? `${found.clue.title}${found.variant.name ? ` · ${found.variant.name}` : ""}` : "Clue not found";
       back = hrefFor.catalogue();
-      body = found ? (route.name === "plan" ? <Plan clueId={route.clueId} /> : route.name === "knit" ? <Knit clueId={route.clueId} /> : <Placeholder name={route.name} />) : <p>This clue is not in the app. <a href={hrefFor.catalogue()}>Back to the catalogue</a></p>;
+      body = found ? (route.name === "plan" ? <Plan clueId={route.clueId} /> : route.name === "knit" ? <Knit clueId={route.clueId} /> : <Sections clueId={route.clueId} />) : <p>This clue is not in the app. <a href={hrefFor.catalogue()}>Back to the catalogue</a></p>;
     }
   }
   return (
