@@ -60,6 +60,8 @@ export function useClue(clueId: string): ClueState {
       .then(async (c) => {
         const stored = await s.load(clueId);
         let p = stored ? stored : newProgress(c);
+        // The start date defaults to the day the clue is first opened, so save it right away.
+        if (!stored) await s.save(p);
         if (stored) {
           const r = reconcile(stored, c);
           p = r.progress;

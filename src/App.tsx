@@ -2,6 +2,7 @@ import { Layout } from "./components/Layout";
 import { findVariant } from "./data/catalogue";
 import { hrefFor, useRoute } from "./router";
 import { Catalogue } from "./screens/Catalogue";
+import { Plan } from "./screens/Plan";
 import { StoreProvider } from "./state/AppContext";
 
 function Placeholder({ name }: { name: string }) {
@@ -29,7 +30,7 @@ export function App() {
       const found = findVariant(route.clueId);
       title = found ? `${found.clue.title}${found.variant.name ? ` · ${found.variant.name}` : ""}` : "Clue not found";
       back = hrefFor.catalogue();
-      body = found ? <Placeholder name={route.name} /> : <p>This clue is not in the app. <a href={hrefFor.catalogue()}>Back to the catalogue</a></p>;
+      body = found ? (route.name === "plan" ? <Plan clueId={route.clueId} /> : <Placeholder name={route.name} />) : <p>This clue is not in the app. <a href={hrefFor.catalogue()}>Back to the catalogue</a></p>;
     }
   }
   return (
