@@ -51,14 +51,16 @@ export interface ClueVariant {
 export interface Clue {
   schema_version: number;
   clue_id: string;
-  base_clue_id?: string;
-  variant?: ClueVariant;
+  base_clue_id?: string | null;
+  variant?: ClueVariant | null;
   mkal_id: string;
   mkal: string;
   year: number;
   designer: string;
   clue_number: number;
   title: string;
+  /** Present (true) in clue.public.json. */
+  instructions_stripped?: boolean;
   data_version: string;
   total: number;
   colours: string[];

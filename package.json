@@ -7,7 +7,13 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "catalogue": "tsx scripts/build-catalogue.ts",
+    "predev": "npm run catalogue",
+    "prebuild": "npm run catalogue",
+    "pretest": "npm run catalogue",
+    "test": "vitest run",
+    "build:public": "PUBLIC_BUILD=1 npm run build && tsx scripts/check-public-build.ts"
   },
   "dependencies": {
     "idb": "^8.0.3",
