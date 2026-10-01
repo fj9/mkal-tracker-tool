@@ -4,7 +4,8 @@ export type Route =
   | { name: "catalogue" }
   | { name: "plan" | "knit" | "sections"; clueId: string }
   | { name: "settings"; mkalId?: string }
-  | { name: "help" };
+  | { name: "help" }
+  | { name: "about" };
 
 export function parseHash(hash: string): Route {
   const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean).map(decodeURIComponent);
@@ -15,6 +16,7 @@ export function parseHash(hash: string): Route {
   }
   if (parts[0] === "settings") return { name: "settings", mkalId: parts[1] };
   if (parts[0] === "help") return { name: "help" };
+  if (parts[0] === "about") return { name: "about" };
   return { name: "catalogue" };
 }
 
@@ -25,6 +27,7 @@ export const hrefFor = {
   sections: (id: string) => `#/clue/${encodeURIComponent(id)}/sections`,
   settings: (mkalId?: string) => (mkalId ? `#/settings/${encodeURIComponent(mkalId)}` : "#/settings"),
   help: () => "#/help",
+  about: () => "#/about",
 };
 
 export function useRoute(): Route {

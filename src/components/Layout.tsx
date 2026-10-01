@@ -35,7 +35,8 @@ export function Layout({ route, title, back, children }: Props) {
         {children}
         <footer className="site-footer">
           <div>Made by Freya'd Knot</div>
-          <div className="row" style={{ justifyContent: "center", gap: 16 }}>
+          <div className="row" style={{ justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
+            <a href={hrefFor.about()}>About</a>
             <a href="https://www.ravelry.com/people/freyadknot" target="_blank" rel="noopener noreferrer">Ravelry</a>
             <a href="https://www.instagram.com/freyaj9/" target="_blank" rel="noopener noreferrer">Instagram</a>
             <a href="https://github.com/fj9" target="_blank" rel="noopener noreferrer">GitHub</a>

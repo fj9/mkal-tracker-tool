@@ -4,6 +4,7 @@ import { hrefFor, useRoute } from "./router";
 import { Banners } from "./components/Banners";
 import { UpdatePrompt } from "./components/UpdatePrompt";
 import { Welcome } from "./components/Welcome";
+import { About } from "./screens/About";
 import { Catalogue } from "./screens/Catalogue";
 import { Help } from "./screens/Help";
 import { Knit } from "./screens/Knit";
@@ -24,6 +25,10 @@ export function App() {
     case "settings":
       title = "Settings"; back = hrefFor.catalogue();
       body = <Settings initialMkal={route.mkalId} />;
+      break;
+    case "about":
+      title = "About"; back = hrefFor.catalogue();
+      body = <About />;
       break;
     case "help":
       title = "Help"; back = hrefFor.catalogue();
