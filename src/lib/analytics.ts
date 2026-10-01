@@ -2,7 +2,7 @@
  * GoatCounter: a small, cookie-free visit counter. Set your site code (the part before
  * ".goatcounter.com") to turn it on; leave it empty and nothing is loaded or sent.
  */
-export const GOATCOUNTER_CODE = "";
+export const GOATCOUNTER_CODE = "fj9";
 
 export const countUrl = (code: string) => `https://${code}.goatcounter.com/count`;
 
