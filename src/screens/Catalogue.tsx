@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCatalogue, loadClue } from "../data/catalogue";
+import { MKAL_LINKS } from "../data/mkalLinks";
 import type { CatalogueClue, CatalogueMkal } from "../data/schema";
 import { stitchesDone } from "../lib/plan";
 import { hrefFor } from "../router";
@@ -107,6 +108,11 @@ function MkalCard({ mkal, fractions }: { mkal: CatalogueMkal; fractions: Record<
         <ul className="list" id={`clues-${mkal.mkal_id}`} style={{ padding: "0 18px 10px" }}>
           {mkal.clues.map((c) => <ClueItem key={c.base_clue_id} clue={c} fractions={fractions} />)}
         </ul>
+      )}
+      {open && MKAL_LINKS[mkal.mkal_id] && (
+        <p className="small muted" style={{ margin: 0, padding: "0 18px 14px" }}>
+          <a href={MKAL_LINKS[mkal.mkal_id]} target="_blank" rel="noopener noreferrer">Join the MKAL or get the pattern on Ravelry ↗</a>
+        </p>
       )}
     </section>
   );

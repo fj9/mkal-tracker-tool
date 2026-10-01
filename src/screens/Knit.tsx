@@ -3,6 +3,7 @@ import { CheckIn } from "../components/CheckIn";
 import { ClueGate } from "../components/ClueGate";
 import { Colour, ColourBand, num } from "../components/Format";
 import type { Clue, Progress, Row } from "../data/schema";
+import { MKAL_LINKS } from "../data/mkalLinks";
 import { indexRows, upcoming } from "../lib/rows";
 import { status } from "../lib/plan";
 import { hrefFor } from "../router";
@@ -97,7 +98,10 @@ function KnitBody({ clue, progress, update }: { clue: Clue; progress: Progress; 
         {current.instr ? (
           <p style={{ borderTop: "1px solid var(--line)", paddingTop: 8 }}>{current.instr}</p>
         ) : (
-          <p className="small muted">Follow your own pattern PDF for the instructions.</p>
+          <p className="small muted">
+            Follow your own pattern PDF for the instructions.
+            {MKAL_LINKS[clue.mkal_id] && <> <a href={MKAL_LINKS[clue.mkal_id]} target="_blank" rel="noopener noreferrer">Get the pattern ↗</a></>}
+          </p>
         )}
         <button className="btn primary big" onClick={() => tick(current)}>Done</button>
         <div style={{ marginTop: 8 }}>

@@ -25,3 +25,4 @@ dist-ssr
 
 src/generated
 content/clues/*_clue.json
+.claude/settings.local.json
