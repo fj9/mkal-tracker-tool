@@ -91,7 +91,7 @@ function KnitBody({ clue, progress, update }: { clue: Clue; progress: Progress; 
         <Counts r={current} />
         {current.rep_row != null && (
           <p className="small muted">
-            Repeat: {passes ? `pass ${current.rep_pass} of ${passes}, ` : ""}row {current.rep_row}{repRows ? ` of ${repRows}` : ""}
+            {passes ? `Repeat ${current.rep_pass} of ${passes}, ` : "Repeat "}row {current.rep_row}{repRows ? ` of ${repRows}` : ""}
           </p>
         )}
         {current.instr ? (

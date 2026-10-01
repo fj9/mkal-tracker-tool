@@ -36,7 +36,7 @@ export function Layout({ route, title, back, children }: Props) {
         <nav className="tabbar" aria-label="Clue sections">
           {(["plan", "knit", "sections"] as const).map((n) => (
             <a key={n} href={hrefFor[n](clueId)} aria-current={route.name === n ? "page" : undefined}>
-              {n[0].toUpperCase() + n.slice(1)}
+              {n === "sections" ? "Overview" : n[0].toUpperCase() + n.slice(1)}
             </a>
           ))}
         </nav>

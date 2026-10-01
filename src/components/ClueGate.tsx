@@ -23,7 +23,7 @@ export function ClueGate({
           <strong>This clue has been updated.</strong>{" "}
           Your ticks are kept for every row that still exists
           {s.change.dropped > 0 ? `; ${s.change.dropped} ticked row${s.change.dropped === 1 ? " is" : "s are"} no longer in the clue and ${s.change.dropped === 1 ? "was" : "were"} dropped` : ""}.
-          Check your place in Sections.
+          Check your place in Overview.
           <div><button className="btn" style={{ minHeight: 40, marginTop: 8 }} onClick={s.clearChange}>OK</button></div>
         </div>
       )}

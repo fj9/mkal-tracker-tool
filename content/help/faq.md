@@ -16,7 +16,7 @@ Pick the size or stitch option you are knitting. Each version keeps its own prog
 
 ## I knitted ahead, or started without the app.
 
-Open Sections, find your row and choose "Tick up to here".
+On Knit, tap "Check in", pick the last row you finished and choose "Mark done up to here". Or open Overview, tap the row number and choose "Done up to here".
 
 ## I frogged or made a mistake.
 

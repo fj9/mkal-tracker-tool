@@ -12,7 +12,7 @@ interface Props {
 }
 
 const optionLabel = (r: Row) =>
-  `Row ${r.lab}${r.side ? ` ${r.side}` : ""}${r.sub ? ` · ${r.sub}` : ""}${r.rep_pass ? ` · pass ${r.rep_pass}` : ""}  (#${r.actual_row})`;
+  `Row ${r.lab}${r.side ? ` ${r.side}` : ""}${r.sub ? ` · ${r.sub}` : ""}${r.rep_pass ? ` · repeat ${r.rep_pass}` : ""}  (#${r.actual_row})`;
 
 /**
  * "I have done everything up to here": pick a section and a row and tick all rows up to it,

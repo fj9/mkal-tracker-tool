@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { CheckIn } from "../components/CheckIn";
 import { ClueGate } from "../components/ClueGate";
 import { Colour, num, rowLabel } from "../components/Format";
 import type { Clue, Progress } from "../data/schema";
@@ -17,7 +15,6 @@ const fmt = (iso: string) =>
 type Update = (fn: (p: Progress) => Progress) => Promise<void>;
 
 function PlanBody({ clue, progress, update, clueId }: { clue: Clue; progress: Progress; update: Update; clueId: string }) {
-  const [checkIn, setCheckIn] = useState(false);
   const today = todayIso();
   const st = status(clue.rows, clue.total, new Set(progress.done), { startDate: progress.start_date, days: progress.days }, today);
   const started = today >= progress.start_date;
@@ -67,10 +64,9 @@ function PlanBody({ clue, progress, update, clueId }: { clue: Clue; progress: Pr
           <p className="small muted">{num(st.toGo)} to go today: that gets you to {rowLabel(st.rowByEndOfToday)}.</p>
         )}
         <div className="row" style={{ flexWrap: "wrap" }}>
-          <button className="btn primary" onClick={() => setCheckIn(true)}>Check in</button>
-          <a className="btn" href={hrefFor.knit(clueId)}>Go to Knit</a>
+          <a className="btn primary" href={hrefFor.knit(clueId)}>Go to Knit</a>
+          <a className="btn" href={hrefFor.sections(clueId)}>See overview</a>
         </div>
-        {checkIn && <CheckIn clue={clue} progress={progress} update={update} onClose={() => setCheckIn(false)} />}
       </section>
 
       <section className="card">

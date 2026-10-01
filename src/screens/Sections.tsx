@@ -1,9 +1,11 @@
-import { useMemo, useState } from "react";
-import { CheckIn } from "../components/CheckIn";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ClueGate } from "../components/ClueGate";
-import { Colour } from "../components/Format";
+import { num } from "../components/Format";
 import type { Clue, Progress, Row } from "../data/schema";
-import { setTicked, tickUpTo } from "../state/progress";
+import { colourFor, readableInk } from "../lib/colours";
+import { useSettings } from "../state/AppContext";
+import { useMkal } from "../state/MkalContext";
+import { setPlace, setTicked } from "../state/progress";
 
 interface Group { sub: string | null; rows: Row[] }
 
@@ -19,91 +21,135 @@ function groupBySub(rows: Row[]): Group[] {
 }
 
 const count = (rows: Row[], done: ReadonlySet<string>) => rows.filter((r) => done.has(r.row_id)).length;
+const net = (n: number) => (n === 0 ? "" : n > 0 ? `+${n}` : `−${-n}`);
 
-function SectionsBody({ clue, progress, update }: { clue: Clue; progress: Progress; update: (fn: (p: Progress) => Progress) => Promise<void> }) {
+function ColourCell({ code }: { code: string }) {
+  const { settings } = useSettings();
+  const c = colourFor(settings, useMkal(), code);
+  return (
+    <td className="colour-cell" title={c.name || code}
+      style={c.hex ? { background: c.hex, color: readableInk(c.hex) } : undefined}>
+      {code}
+    </td>
+  );
+}
+
+type Update = (fn: (p: Progress) => Progress) => Promise<void>;
+
+/** An overview of the whole clue, like a spreadsheet tracker: see where you are up to at a glance. */
+function OverviewBody({ clue, progress, update }: { clue: Clue; progress: Progress; update: Update }) {
   const done = useMemo(() => new Set(progress.done), [progress.done]);
-  const [open, setOpen] = useState<string | null>(null);
-  const [pending, setPending] = useState<string | null>(null);
-  const [checkIn, setCheckIn] = useState(false);
-
-  // Stripe progress keyed by section + stripe name.
-  const stripes = useMemo(() => {
-    const m = new Map<string, Row[]>();
-    for (const r of clue.rows) if (r.stripe) m.set(`${r.sec}|${r.stripe}`, [...(m.get(`${r.sec}|${r.stripe}`) ?? []), r]);
-    return m;
-  }, [clue]);
-
-  const firstUnticked = clue.rows.find((r) => !done.has(r.row_id));
+  const current = clue.rows.find((r) => !done.has(r.row_id));
   const bySection = useMemo(() => {
     const m = new Map<string, Row[]>();
     for (const r of clue.rows) m.set(r.sec, [...(m.get(r.sec) ?? []), r]);
     return m;
   }, [clue]);
+  // The section you are in starts open; others are one tap away.
+  const [open, setOpen] = useState<Set<string>>(() => new Set(current ? [current.sec] : []));
+  const [selected, setSelected] = useState<string | null>(null);
+  const hereRef = useRef<HTMLTableRowElement | null>(null);
+
+  useEffect(() => {
+    hereRef.current?.scrollIntoView({ block: "center" });
+    // Only on first show.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const toggle = (name: string) =>
+    setOpen((o) => { const n = new Set(o); if (n.has(name)) n.delete(name); else n.add(name); return n; });
 
   return (
     <>
-      <p className="muted">Open a section to see its rows, or check in to say how far you have got.</p>
-      <button className="btn primary" style={{ marginBottom: 12 }} onClick={() => setCheckIn(true)}>Check in</button>
-      {checkIn && <CheckIn clue={clue} progress={progress} update={update} onClose={() => setCheckIn(false)} />}
+      <p className="muted small">
+        Tap a section to open it. Tick rows as you go, or tap a row number and choose “Done up to here”.
+      </p>
       {clue.sections.map((s) => {
         const rows = bySection.get(s.name) ?? [];
         const n = count(rows, done);
-        const isOpen = open === s.name;
-        const current = firstUnticked?.sec === s.name;
+        const pct = rows.length ? Math.floor((n / rows.length) * 100) : 0;
+        const isOpen = open.has(s.name);
         return (
-          <section className="card" key={s.name}>
-            <button className="link-row" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : s.name)} style={{ padding: 0 }}>
-              <div className="grow">
-                <strong>{s.name}</strong>{current && <span className="pill" style={{ marginLeft: 8 }}>you are here</span>}
-                <div className="small muted">{n} of {rows.length} rows · {s.stitches_worked.toLocaleString()} stitches</div>
-                <div className="bar" style={{ marginTop: 6 }}><span style={{ width: `${rows.length ? (n / rows.length) * 100 : 0}%` }} /></div>
-              </div>
+          <section key={s.name} className="overview-section">
+            <button className="section-head" aria-expanded={isOpen} onClick={() => toggle(s.name)}>
+              <span className="grow" style={{ textAlign: "left" }}>
+                <strong>{s.name}</strong>
+                {current?.sec === s.name && <span className="pill here-pill">you are here</span>}
+              </span>
               <span aria-hidden>{isOpen ? "⌃" : "⌄"}</span>
             </button>
-            {isOpen && groupBySub(rows).map((g, gi) => (
-              <div key={gi} style={{ marginTop: 12 }}>
-                {g.sub && <h3>{g.sub} <span className="small muted">{count(g.rows, done)} of {g.rows.length}</span></h3>}
-                <ul className="list">
-                  {g.rows.map((r) => {
-                    const ticked = done.has(r.row_id);
-                    const st = r.stripe ? stripes.get(`${r.sec}|${r.stripe}`) : undefined;
-                    return (
-                      <li key={r.row_id} style={{ padding: "6px 0" }}>
-                        <div className="row">
-                          <label className="row grow" style={{ minHeight: 44, cursor: "pointer" }}>
-                            <input type="checkbox" checked={ticked} style={{ width: 22, height: 22 }}
-                              onChange={(e) => update((p) => setTicked(p, r.row_id, e.target.checked))} />
-                            <span className="grow">
-                              <strong>{r.lab}{r.side ? ` ${r.side}` : ""}</strong>{" "}
-                              <Colour code={r.col} />
-                              <span className="small muted"> · start {r.sts_start}, work {r.sts_worked}, end {r.sts_end}</span>
-                              {st && <span className="small muted"> · {r.stripe} {count(st, done)}/{st.length}</span>}
-                            </span>
-                          </label>
-                          <button className="btn" style={{ minHeight: 40, padding: "0 10px", fontSize: ".8rem" }} onClick={() => setPending(r.row_id)}>Tick up to here</button>
-                        </div>
-                        {pending === r.row_id && (
-                          <div className="notice" role="alertdialog" aria-label="Confirm tick up to here" style={{ marginTop: 6 }}>
-                            Tick every row up to and including row {r.actual_row} ({r.sec} · {r.lab})?
-                            <div className="row" style={{ marginTop: 8 }}>
-                              <button className="btn primary" onClick={() => { update((p) => tickUpTo(clue, p, r.row_id)); setPending(null); }}>Yes, tick them</button>
-                              <button className="btn" onClick={() => setPending(null)}>Cancel</button>
-                            </div>
-                          </div>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
+            <div className="section-stats">
+              <span><strong>{n}</strong> of {rows.length} rows completed</span>
+              <span><strong>{pct}%</strong> of section complete</span>
+            </div>
+            <div className="bar" aria-hidden><span style={{ width: `${pct}%` }} /></div>
+            {isOpen && (
+              <table className="grid">
+                <thead>
+                  <tr><th>Row</th><th>Done</th><th>Rpt row</th><th>Colour</th><th>Net</th><th>Worked</th></tr>
+                </thead>
+                {groupBySub(rows).map((g, gi) => (
+                  <tbody key={gi}>
+                    {g.sub && (
+                      <tr className="sub-row"><td colSpan={6}>{g.sub} · {count(g.rows, done)} of {g.rows.length}</td></tr>
+                    )}
+                    {g.rows.map((r, ri) => {
+                      const ticked = done.has(r.row_id);
+                      const isHere = current?.row_id === r.row_id;
+                      const newRepeat = r.rep_pass != null && r.rep_pass !== g.rows[ri - 1]?.rep_pass;
+                      return (
+                        <GridRow key={r.row_id} r={r} repeatStart={newRepeat ? r.rep_pass : null} ticked={ticked} isHere={isHere} hereRef={isHere ? hereRef : undefined}
+                          selected={selected === r.row_id}
+                          onSelect={() => setSelected(selected === r.row_id ? null : r.row_id)}
+                          onTick={(v) => update((p) => setTicked(p, r.row_id, v))}
+                          onPlace={() => { update((p) => setPlace(clue, p, r.row_id)); setSelected(null); }} />
+                      );
+                    })}
+                  </tbody>
+                ))}
+              </table>
+            )}
           </section>
         );
       })}
+      <p className="small muted">{num(clue.total)} stitches in {clue.rows.length} rows.</p>
+    </>
+  );
+}
+
+function GridRow({ r, repeatStart, ticked, isHere, hereRef, selected, onSelect, onTick, onPlace }: {
+  r: Row; repeatStart: number | null | undefined; ticked: boolean; isHere: boolean; hereRef?: React.RefObject<HTMLTableRowElement | null>;
+  selected: boolean; onSelect: () => void; onTick: (v: boolean) => void; onPlace: () => void;
+}) {
+  return (
+    <>
+      {repeatStart != null && <tr className="sub-row"><td colSpan={6}>Repeat {repeatStart}</td></tr>}
+      <tr ref={hereRef} className={`${ticked ? "is-done" : ""}${isHere ? " is-here" : ""}`}>
+        <td>
+          <button className="row-num" aria-expanded={selected} aria-label={`Row ${r.lab}${r.side ? ` ${r.side}` : ""}, options`} onClick={onSelect}>
+            {r.lab}<small>{r.side}</small>
+          </button>
+        </td>
+        <td>
+          <input type="checkbox" className="tick" checked={ticked} aria-label={`Row ${r.lab} done`} onChange={(e) => onTick(e.target.checked)} />
+        </td>
+        <td className="num-cell">{r.rep_row ?? ""}</td>
+        <ColourCell code={r.col} />
+        <td className="num-cell muted">{net(r.net)}</td>
+        <td className="num-cell">{r.sts_worked}</td>
+      </tr>
+      {selected && (
+        <tr className="action-row">
+          <td colSpan={6}>
+            <button className="btn primary" onClick={onPlace}>Done up to here (row {r.actual_row})</button>
+            <button className="btn" onClick={onSelect}>Cancel</button>
+          </td>
+        </tr>
+      )}
     </>
   );
 }
 
 export function Sections({ clueId }: { clueId: string }) {
-  return <ClueGate clueId={clueId}>{(s) => <SectionsBody clue={s.clue} progress={s.progress} update={s.update} />}</ClueGate>;
+  return <ClueGate clueId={clueId}>{(s) => <OverviewBody clue={s.clue} progress={s.progress} update={s.update} />}</ClueGate>;
 }
