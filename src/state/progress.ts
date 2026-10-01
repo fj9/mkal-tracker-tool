@@ -3,6 +3,8 @@ import type { Clue, Progress } from "../data/schema";
 
 /** Settings kept beside progress on this device. */
 export interface Settings {
+  /** Light, dark, or follow the phone (default). */
+  theme?: "light" | "dark" | "system";
   /** Colours per MKAL: mkal_id -> colour code -> name and swatch. */
   mkalColours?: Record<string, Record<string, { name: string; hex: string }>>;
   /** Older one-set-for-everything colours; still read as a fallback. */

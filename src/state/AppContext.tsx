@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { loadClue } from "../data/catalogue";
+import { applyTheme } from "../lib/theme";
 import type { Clue, Progress } from "../data/schema";
 import { createIndexedDbStore, newProgress, reconcile, type ProgressStore, type Settings } from "./progress";
 
@@ -24,6 +25,7 @@ export function useSettings() {
     const off = s.subscribe(read);
     return () => { live = false; off(); };
   }, [s]);
+  useEffect(() => { if (ready) applyTheme(settings.theme ?? "system"); }, [ready, settings.theme]);
   const update = useCallback(
     async (patch: Partial<Settings>) => {
       const next = { ...(await s.getSettings()), ...patch };

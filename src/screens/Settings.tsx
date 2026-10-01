@@ -92,6 +92,15 @@ export function Settings({ initialMkal }: { initialMkal?: string }) {
       {due && <div className="notice">It has been a week or more since you last backed up. Use Back up below.</div>}
 
       <section className="card">
+        <h2>Appearance</h2>
+        <div className="seg" role="group" aria-label="Colour mode">
+          {([["light", "Light"], ["dark", "Dark"], ["system", "Follow my phone"]] as const).map(([mode, label]) => (
+            <button key={mode} aria-pressed={(settings.theme ?? "system") === mode} onClick={() => update({ theme: mode })}>{label}</button>
+          ))}
+        </div>
+      </section>
+
+      <section className="card">
         <h2>Your colours</h2>
         <p className="small muted">Say which yarn you are using for each colour code, and it shows up everywhere in the app. Each MKAL has its own set.</p>
         <label className="field">

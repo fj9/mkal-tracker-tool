@@ -13,8 +13,8 @@ export default defineConfig({
         name: "Freya'd Knot's Knitting Tracker",
         short_name: "Freya'd Knot",
         description: "Tick off clue rows and see where you should be each day.",
-        theme_color: "#ffffff",
-        background_color: "#ffffff",
+        theme_color: "#fafcf9",
+        background_color: "#fafcf9",
         display: "standalone",
         start_url: ".",
         icons: [
