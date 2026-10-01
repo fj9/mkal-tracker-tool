@@ -17,7 +17,7 @@ Progress and stitches use *stitches worked*, not row counts, because rows differ
 
 ## Privacy
 
-There is no backend, account or tracking. Progress is saved in your browser (IndexedDB). Use Back up in Settings to save a file you can restore on another device.
+There is no backend or account. Progress is saved in your browser (IndexedDB) and never leaves your device. The only analytics is an optional [GoatCounter](https://www.goatcounter.com) page-view counter (cookie-free, no personal data, honours Do Not Track). It is off until a site code is set in `src/lib/analytics.ts`, and it never runs in development. Use Back up in Settings to save a file you can restore on another device.
 
 ## The clue data
 

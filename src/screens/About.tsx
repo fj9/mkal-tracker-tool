@@ -1,4 +1,5 @@
 import aboutMd from "../../content/help/about.md?raw";
+import { GOATCOUNTER_CODE } from "../lib/analytics";
 import { parseParagraphs } from "../lib/paragraphs";
 
 const paragraphs = parseParagraphs(aboutMd);
@@ -18,6 +19,11 @@ export function About() {
           )}
         </p>
       ))}
+      {GOATCOUNTER_CODE && (
+        <p className="small muted">
+          I use <a href="https://www.goatcounter.com" target="_blank" rel="noopener noreferrer">GoatCounter</a>, a simple counter that sets no cookies, to see roughly how many people visit and which pages they open. It never sees what you tick.
+        </p>
+      )}
     </section>
   );
 }

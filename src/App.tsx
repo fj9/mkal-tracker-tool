@@ -1,6 +1,8 @@
 import { Layout } from "./components/Layout";
 import { findVariant } from "./data/catalogue";
 import { hrefFor, useRoute } from "./router";
+import { useEffect } from "react";
+import { initAnalytics, pathFromHash, trackPage } from "./lib/analytics";
 import { Banners } from "./components/Banners";
 import { UpdatePrompt } from "./components/UpdatePrompt";
 import { Welcome } from "./components/Welcome";
@@ -15,6 +17,8 @@ import { StoreProvider } from "./state/AppContext";
 
 export function App() {
   const route = useRoute();
+  useEffect(() => { initAnalytics(); }, []);
+  useEffect(() => { trackPage(pathFromHash(location.hash)); }, [route]);
   let title = "Freya'd Knot's Knitting Tracker";
   let back: string | undefined;
   let body;
