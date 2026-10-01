@@ -14,7 +14,7 @@ import { StoreProvider } from "./state/AppContext";
 
 export function App() {
   const route = useRoute();
-  let title = "Knitting Clue Tracker";
+  let title = "Freya'd Knot's Knitting Tracker";
   let back: string | undefined;
   let body;
   switch (route.name) {

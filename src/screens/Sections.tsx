@@ -5,7 +5,7 @@ import type { Clue, Progress, Row } from "../data/schema";
 import { colourFor, readableInk } from "../lib/colours";
 import { useSettings } from "../state/AppContext";
 import { useMkal } from "../state/MkalContext";
-import { setPlace, setTicked } from "../state/progress";
+import { setPlace, untickFrom } from "../state/progress";
 
 interface Group { sub: string | null; rows: Row[] }
 
@@ -62,7 +62,7 @@ function OverviewBody({ clue, progress, update }: { clue: Clue; progress: Progre
   return (
     <>
       <p className="muted small">
-        Tap a section to open it. Tick rows as you go, or tap a row number and choose “Done up to here”.
+        Tap a section to open it. Ticking a row ticks every row before it; unticking a row unticks it and the rows after. Or tap a row number and choose “Done up to here”.
       </p>
       {clue.sections.map((s) => {
         const rows = bySection.get(s.name) ?? [];
@@ -101,7 +101,7 @@ function OverviewBody({ clue, progress, update }: { clue: Clue; progress: Progre
                         <GridRow key={r.row_id} r={r} repeatStart={newRepeat ? r.rep_pass : null} ticked={ticked} isHere={isHere} hereRef={isHere ? hereRef : undefined}
                           selected={selected === r.row_id}
                           onSelect={() => setSelected(selected === r.row_id ? null : r.row_id)}
-                          onTick={(v) => update((p) => setTicked(p, r.row_id, v))}
+                          onTick={(v) => update((p) => (v ? setPlace(clue, p, r.row_id) : untickFrom(clue, p, r.row_id)))}
                           onPlace={() => { update((p) => setPlace(clue, p, r.row_id)); setSelected(null); }} />
                       );
                     })}

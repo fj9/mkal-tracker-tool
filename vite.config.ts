@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: "prompt", // the app asks the user to reload when a new version is cached
       includeAssets: ["favicon.svg", "icon-192.png", "icon-512.png"],
       manifest: {
-        name: "Knitting Clue Tracker",
-        short_name: "Clue Tracker",
+        name: "Freya'd Knot's Knitting Tracker",
+        short_name: "Freya'd Knot",
         description: "Tick off clue rows and see where you should be each day.",
         theme_color: "#ffffff",
         background_color: "#ffffff",

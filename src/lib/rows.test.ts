@@ -1,10 +1,8 @@
-import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import type { Clue } from "../data/schema";
+import { loadClueFile } from "../../scripts/fixtures";
 import { indexRows, upcoming } from "./rows";
 
-const load = (n: string): Clue =>
-  JSON.parse(readFileSync(new URL(`../../content/clues/${n}_clue.public.json`, import.meta.url), "utf8"));
+const load = loadClueFile;
 
 describe("upcoming", () => {
   const rows = load("twists_turns_clue1").rows;

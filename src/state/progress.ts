@@ -182,6 +182,14 @@ export function setPlace(clue: Clue, progress: Progress, rowId: string, untickAf
   return { ...progress, done: clue.rows.filter((r) => done.has(r.row_id)).map((r) => r.row_id), updated_at: new Date().toISOString() };
 }
 
+/** Untick this row and every row after it, so what stays ticked is still a continuous run. */
+export function untickFrom(clue: Clue, progress: Progress, rowId: string): Progress {
+  const idx = clue.rows.findIndex((r) => r.row_id === rowId);
+  if (idx < 0) return progress;
+  if (idx === 0) return { ...progress, done: [], updated_at: new Date().toISOString() };
+  return setPlace(clue, progress, clue.rows[idx - 1].row_id, true);
+}
+
 export const tickUpTo = (clue: Clue, progress: Progress, rowId: string): Progress => setPlace(clue, progress, rowId);
 
 export function setTicked(progress: Progress, rowId: string, ticked: boolean): Progress {

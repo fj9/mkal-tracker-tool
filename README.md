@@ -1,4 +1,4 @@
-# Knitting Clue Tracker
+# Freya'd Knot's Knitting Tracker
 
 Client-only Vite + React + TypeScript web app (installable PWA). Tick rows as you knit and see where you should be each day. Progress is stored on the device in IndexedDB.
 
@@ -11,7 +11,7 @@ Client-only Vite + React + TypeScript web app (installable PWA). Tick rows as yo
 
 ## Adding a clue
 
-Put the clue's `*_clue.public.json` in `content/clues/` and rebuild. Files sharing a `base_clue_id` become versions of one clue. The build fails with a clear message if any spec check fails or two files share a `clue_id`. Private `*_clue.json` files are git-ignored.
+Put the clue's `*_clue.public.json` in `content/clues/` (only shipped clues live there; older MKALs used as test data are in `fixtures/clues/`) and rebuild. Files sharing a `base_clue_id` become versions of one clue. The build fails with a clear message if any spec check fails or two files share a `clue_id`. Private `*_clue.json` files are git-ignored.
 
 ## Layout
 

@@ -1,12 +1,9 @@
 import "fake-indexeddb/auto";
-import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import type { Clue } from "../data/schema";
-import { createIndexedDbStore, newProgress, parseBackup, reconcile, setPlace, setTicked, tickUpTo } from "./progress";
+import { loadClueFile } from "../../scripts/fixtures";
+import { createIndexedDbStore, newProgress, parseBackup, reconcile, setPlace, setTicked, tickUpTo, untickFrom } from "./progress";
 
-const clue: Clue = JSON.parse(
-  readFileSync(new URL("../../content/clues/twists_turns_clue1_clue.public.json", import.meta.url), "utf8"),
-);
+const clue = loadClueFile("twists_turns_clue1");
 
 describe("reconcile", () => {
   it("leaves progress alone when data_version matches", () => {
@@ -53,6 +50,17 @@ describe("setPlace (check in)", () => {
   it("ignores an unknown row", () => {
     const p = newProgress(clue);
     expect(setPlace(clue, p, "nope")).toBe(p);
+  });
+});
+
+describe("untickFrom", () => {
+  it("unticks the row and everything after it, keeping the rows before", () => {
+    const ticked = setPlace(clue, newProgress(clue), clue.rows[12].row_id);
+    expect(untickFrom(clue, ticked, clue.rows[5].row_id).done).toEqual(clue.rows.slice(0, 5).map((r) => r.row_id));
+  });
+  it("unticking the first row clears everything", () => {
+    const ticked = setPlace(clue, newProgress(clue), clue.rows[3].row_id);
+    expect(untickFrom(clue, ticked, clue.rows[0].row_id).done).toEqual([]);
   });
 });
 

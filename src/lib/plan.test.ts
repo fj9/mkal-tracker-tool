@@ -1,16 +1,11 @@
-import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import type { Clue } from "../data/schema";
+import { loadClueFile } from "../../scripts/fixtures";
 import {
   aheadBehind, dailyTarget, progress, status, stitchesDone, targetAtEndOfDay,
   todayDayNumber, toGoToday, weekPlan, whereToBe,
 } from "./plan";
 
-const dir = new URL("../../content/clues/", import.meta.url);
-const clues = new Map<string, Clue>(
-  readdirSync(dir).filter((f) => f.endsWith("_clue.public.json"))
-    .map((f) => [f.replace("_clue.public.json", ""), JSON.parse(readFileSync(new URL(f, dir), "utf8"))]),
-);
+const clues = { get: loadClueFile };
 
 // Spec fixtures: total stitches and per-day target at 7 days.
 const fixtures = [
@@ -21,7 +16,7 @@ const fixtures = [
 ] as const;
 
 describe.each(fixtures)("%s", (name, rowCount, total, perDay) => {
-  const clue = clues.get(name)!;
+  const clue = clues.get(name);
   const rows = clue.rows;
 
   it("matches the spec fixture", () => {
@@ -73,7 +68,7 @@ describe.each(fixtures)("%s", (name, rowCount, total, perDay) => {
 });
 
 describe("plan maths edge cases", () => {
-  const rows = clues.get("twists_turns_clue1")!.rows;
+  const rows = clues.get("twists_turns_clue1").rows;
 
   it("targets are exact at the end of the plan for any day count", () => {
     for (const days of [1, 2, 3, 5, 7, 10, 14]) expect(targetAtEndOfDay(24184, days, days)).toBe(24184);

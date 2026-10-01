@@ -1,13 +1,13 @@
-import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { findInstructionText, validateClue } from "./validate";
-import type { Clue } from "../src/data/schema";
+import { loadClueFile } from "./fixtures";
 
-const load = (name: string): Clue =>
-  JSON.parse(readFileSync(new URL(`../content/clues/${name}_clue.public.json`, import.meta.url), "utf8"));
+const load = loadClueFile;
 
 const fixtures = [
   "go_go_dynamo_clue1", "geogradient_clue2", "twists_turns_clue1", "twists_turns_clue2",
+  "mystery_musikal_2025_clue1__brioche", "mystery_musikal_2025_clue1__garter-stripes", "mystery_musikal_2025_clue2",
+  "mystery_musikal_2025_clue3", "mystery_musikal_2025_clue4__brioche", "mystery_musikal_2025_clue4__simple-stripes",
 ];
 
 describe("build checks", () => {

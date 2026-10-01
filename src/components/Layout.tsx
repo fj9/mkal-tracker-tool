@@ -31,7 +31,16 @@ export function Layout({ route, title, back, children }: Props) {
           </a>
         )}
       </header>
-      <main className="main">{children}</main>
+      <main className="main">
+        {children}
+        <footer className="site-footer">
+          <div>Made by Freya'd Knot</div>
+          <div className="row" style={{ justifyContent: "center", gap: 16 }}>
+            <a href="https://www.ravelry.com/people/freyadknot" target="_blank" rel="noopener noreferrer">Ravelry</a>
+            <a href="https://www.instagram.com/freyaj9/" target="_blank" rel="noopener noreferrer">Instagram</a>
+          </div>
+        </footer>
+      </main>
       {clueId && (
         <nav className="tabbar" aria-label="Clue sections">
           {(["plan", "knit", "sections"] as const).map((n) => (
