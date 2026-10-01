@@ -9,9 +9,9 @@ describe("parseHelp", () => {
       { title: "B", body: "Two." },
     ]);
   });
-  it("the shipped help files give three welcome cards and a full FAQ", () => {
+  it("the shipped help files give four welcome cards and a full FAQ", () => {
     const read = (n: string) => readFileSync(new URL(`../../content/help/${n}.md`, import.meta.url), "utf8");
-    expect(parseHelp(read("welcome"))).toHaveLength(3);
-    expect(parseHelp(read("faq")).length).toBeGreaterThanOrEqual(13);
+    expect(parseHelp(read("welcome"))).toHaveLength(4);
+    expect(parseHelp(read("faq")).length).toBeGreaterThanOrEqual(15);
   });
 });

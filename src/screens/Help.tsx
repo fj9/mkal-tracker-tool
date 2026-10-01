@@ -1,4 +1,5 @@
 import { parseHelp } from "../lib/help";
+import { useSettings } from "../state/AppContext";
 import faqMd from "../../content/help/faq.md?raw";
 import welcomeMd from "../../content/help/welcome.md?raw";
 
@@ -6,6 +7,7 @@ export const welcomeCards = parseHelp(welcomeMd);
 const faq = parseHelp(faqMd);
 
 export function Help() {
+  const { update } = useSettings();
   return (
     <>
       <section className="card">
@@ -15,6 +17,7 @@ export function Help() {
             <li key={c.title} style={{ marginBottom: 8 }}><strong>{c.title}</strong> {c.body}</li>
           ))}
         </ol>
+        <button className="btn" style={{ marginTop: 8 }} onClick={() => { update({ welcomeSeen: false }); location.hash = "#/"; }}>Show the welcome cards again</button>
       </section>
       <section className="card">
         <h2>Questions and answers</h2>

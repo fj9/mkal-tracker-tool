@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCatalogue, loadClue } from "../data/catalogue";
-import type { CatalogueClue } from "../data/schema";
+import type { CatalogueClue, CatalogueMkal } from "../data/schema";
 import { stitchesDone } from "../lib/plan";
 import { hrefFor } from "../router";
 import { useStore } from "../state/AppContext";
@@ -85,6 +85,33 @@ function ClueItem({ clue, fractions }: { clue: CatalogueClue; fractions: Record<
   );
 }
 
+function MkalCard({ mkal, fractions }: { mkal: CatalogueMkal; fractions: Record<string, number> }) {
+  const [open, setOpen] = useState(false);
+  const versions = mkal.clues.reduce((n, c) => n + c.variants.length, 0);
+  const started = mkal.clues.filter((c) => c.variants.some((v) => (fractions[v.clue_id] ?? 0) > 0)).length;
+  return (
+    <section className={`mkal-card${open ? " is-open" : ""}`}>
+      <button className="mkal-head" aria-expanded={open} aria-controls={`clues-${mkal.mkal_id}`} onClick={() => setOpen(!open)}>
+        <span className="grow" style={{ textAlign: "left" }}>
+          <span className="mkal-year">{mkal.year}</span>
+          <span className="mkal-name">{mkal.name}</span>
+          <span className="small muted">
+            {mkal.designer} · {mkal.clues.length} clue{mkal.clues.length === 1 ? "" : "s"}
+            {versions > mkal.clues.length ? `, ${versions} versions` : ""}
+            {started > 0 ? ` · ${started} started` : ""}
+          </span>
+        </span>
+        <span className="mkal-chevron" aria-hidden>{open ? "⌃" : "⌄"}</span>
+      </button>
+      {open && (
+        <ul className="list" id={`clues-${mkal.mkal_id}`} style={{ padding: "0 18px 10px" }}>
+          {mkal.clues.map((c) => <ClueItem key={c.base_clue_id} clue={c} fractions={fractions} />)}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 export function Catalogue() {
   const fractions = useProgressFractions();
   const { mkals } = getCatalogue();
@@ -93,15 +120,7 @@ export function Catalogue() {
   return (
     <>
       <p className="muted">Pick your MKAL, then the clue you are knitting.</p>
-      {mkals.map((m) => (
-        <section className="card" key={m.mkal_id} aria-labelledby={`m-${m.mkal_id}`}>
-          <h2 id={`m-${m.mkal_id}`}>{m.name}</h2>
-          <div className="small muted" style={{ marginBottom: 4 }}>{m.year} · {m.designer}</div>
-          <ul className="list">
-            {m.clues.map((c) => <ClueItem key={c.base_clue_id} clue={c} fractions={fractions} />)}
-          </ul>
-        </section>
-      ))}
+      {mkals.map((m) => <MkalCard key={m.mkal_id} mkal={m} fractions={fractions} />)}
     </>
   );
 }
