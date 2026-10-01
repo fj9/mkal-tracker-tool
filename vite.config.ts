@@ -13,8 +13,8 @@ export default defineConfig({
         name: "Knitting Clue Tracker",
         short_name: "Clue Tracker",
         description: "Tick off clue rows and see where you should be each day.",
-        theme_color: "#3b4a6b",
-        background_color: "#f7f5f2",
+        theme_color: "#ffffff",
+        background_color: "#ffffff",
         display: "standalone",
         start_url: ".",
         icons: [

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { getCatalogue, loadClue } from "../data/catalogue";
 import type { Clue } from "../data/schema";
+import type { Settings as SettingsData } from "../state/progress";
 import { backupReminderDue } from "../lib/backup";
+import { PRESETS, colourFor, readableInk, withColour } from "../lib/colours";
 import { hrefFor } from "../router";
 import { useSettings, useStore } from "../state/AppContext";
 
-const CODES = ["MC", "CC", "AC", "A", "B", "C", "D"];
 const variants = getCatalogue().mkals.flatMap((m) =>
   m.clues.flatMap((c) => c.variants.map((v) => ({ id: v.clue_id, label: `${m.name} ${m.year} · ${c.title}${v.name ? ` · ${v.name}` : ""}` }))),
 );
@@ -29,12 +30,16 @@ function download(name: string, text: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function Settings() {
+export function Settings({ initialMkal }: { initialMkal?: string }) {
   const store = useStore();
-  const { settings, update } = useSettings();
+  const { settings, update: patch } = useSettings();
+  const update = (next: Parameters<typeof patch>[0] | SettingsData) => patch(next as Partial<SettingsData>);
   const [message, setMessage] = useState<string | null>(null);
   const [confirmReset, setConfirmReset] = useState<string | null>(null);
   const [clueId, setClueId] = useState(variants[0]?.id ?? "");
+  const mkals = getCatalogue().mkals;
+  const [mkalId, setMkalId] = useState(mkals.find((m) => m.mkal_id === initialMkal)?.mkal_id ?? mkals[0]?.mkal_id ?? "");
+  const [codes, setCodes] = useState<string[]>([]);
   const [clue, setClue] = useState<Clue | null>(null);
   const [persisted, setPersisted] = useState<boolean | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -45,6 +50,18 @@ export function Settings() {
     loadClue(clueId).then((c) => live && setClue(c)).catch(() => live && setClue(null));
     return () => { live = false; };
   }, [clueId]);
+  // The colour codes used by this MKAL's clues, in order of first use.
+  useEffect(() => {
+    let live = true;
+    const ids = mkals.find((m) => m.mkal_id === mkalId)?.clues.flatMap((c) => c.variants.map((v) => v.clue_id)) ?? [];
+    Promise.all(ids.map((id) => loadClue(id).catch(() => null))).then((clues) => {
+      if (!live) return;
+      const seen: string[] = [];
+      for (const c of clues) for (const code of c?.colours ?? []) if (!seen.includes(code)) seen.push(code);
+      setCodes(seen);
+    });
+    return () => { live = false; };
+  }, [mkalId, mkals]);
   useEffect(() => { navigator.storage?.persisted?.().then(setPersisted).catch(() => {}); }, []);
 
   const backUp = async () => {
@@ -75,19 +92,41 @@ export function Settings() {
       {due && <div className="notice">It has been a week or more since you last backed up. Use Back up below.</div>}
 
       <section className="card">
-        <h2>Colour names</h2>
-        <p className="small muted">Patterns name colours but give no colour values, so name each code and pick a swatch.</p>
-        {CODES.map((code) => (
-          <div className="row" key={code} style={{ marginBottom: 8 }}>
-            <strong style={{ width: 34 }}>{code}</strong>
-            <input aria-label={`Name for ${code}`} placeholder="e.g. Charcoal" value={settings.colourNames[code] ?? ""}
-              style={{ flex: 1, minHeight: 44, padding: "0 10px", border: "1px solid var(--line)", borderRadius: 10, background: "var(--card)", color: "var(--ink)", font: "inherit" }}
-              onChange={(e) => update({ colourNames: { ...settings.colourNames, [code]: e.target.value } })} />
-            <input type="color" aria-label={`Swatch for ${code}`} value={settings.colourSwatches[code] ?? "#cccccc"}
-              style={{ width: 48, height: 44, border: "1px solid var(--line)", borderRadius: 10, background: "var(--card)" }}
-              onChange={(e) => update({ colourSwatches: { ...settings.colourSwatches, [code]: e.target.value } })} />
-          </div>
-        ))}
+        <h2>Your colours</h2>
+        <p className="small muted">Say which yarn you are using for each colour code, and it shows up everywhere in the app. Each MKAL has its own set.</p>
+        <label className="field">
+          MKAL
+          <select value={mkalId} onChange={(e) => setMkalId(e.target.value)}>
+            {mkals.map((m) => <option key={m.mkal_id} value={m.mkal_id}>{m.name} {m.year}</option>)}
+          </select>
+        </label>
+        {codes.map((code) => {
+          const c = colourFor(settings, mkalId, code);
+          return (
+            <fieldset key={code} style={{ border: 0, padding: 0, margin: "0 0 16px" }}>
+              <legend className="row" style={{ padding: 0, marginBottom: 6 }}>
+                <span className="swatch" style={{ width: 30, height: 30, background: c.hex ?? "transparent", borderStyle: c.hex ? "solid" : "dashed" }} aria-hidden />
+                <strong>{code}</strong>
+                <span className="muted small">{c.hex ? c.name || "unnamed" : "not set"}</span>
+              </legend>
+              <div className="chips" role="group" aria-label={`Quick colours for ${code}`}>
+                {PRESETS.map((p) => (
+                  <button key={p.name} type="button" className="chip" aria-pressed={c.hex?.toLowerCase() === p.hex}
+                    style={{ background: p.hex, color: readableInk(p.hex) }}
+                    onClick={() => update(withColour(settings, mkalId, code, p))}>
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+              <div className="row" style={{ marginTop: 8 }}>
+                <input aria-label={`Name for ${code}`} placeholder="Name, e.g. Charcoal" value={c.name} className="text-input"
+                  onChange={(e) => update(withColour(settings, mkalId, code, { name: e.target.value }))} />
+                <input type="color" aria-label={`Custom colour for ${code}`} value={c.hex ?? "#cccccc"} className="colour-input"
+                  onChange={(e) => update(withColour(settings, mkalId, code, { hex: e.target.value }))} />
+              </div>
+            </fieldset>
+          );
+        })}
       </section>
 
       <section className="card">

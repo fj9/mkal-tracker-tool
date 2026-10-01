@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Clue, Progress } from "../data/schema";
 import { hrefFor } from "../router";
 import { useClue, type ClueState } from "../state/AppContext";
+import { MkalContext } from "../state/MkalContext";
 
 /** Loads a clue and shows loading, error and "clue updated" states around the screen body. */
 export function ClueGate({
@@ -16,7 +17,7 @@ export function ClueGate({
     return <p>Could not open this clue: {s.error} <a href={hrefFor.catalogue()}>Back to the catalogue</a></p>;
   if (!s.clue || !s.progress) return <p className="muted">Loading…</p>;
   return (
-    <>
+    <MkalContext.Provider value={s.clue.mkal_id}>
       {s.change && (
         <div className="notice" role="status">
           <strong>This clue has been updated.</strong>{" "}
@@ -27,6 +28,6 @@ export function ClueGate({
         </div>
       )}
       {children({ ...s, clue: s.clue, progress: s.progress })}
-    </>
+    </MkalContext.Provider>
   );
 }

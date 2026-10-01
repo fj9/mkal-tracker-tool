@@ -1,6 +1,7 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
+import { CheckIn } from "../components/CheckIn";
 import { ClueGate } from "../components/ClueGate";
-import { Colour, num } from "../components/Format";
+import { Colour, ColourBand, num } from "../components/Format";
 import type { Clue, Progress, Row } from "../data/schema";
 import { indexRows, upcoming } from "../lib/rows";
 import { status } from "../lib/plan";
@@ -27,6 +28,7 @@ function KnitBody({ clue, progress, update }: { clue: Clue; progress: Progress; 
   const done = useMemo(() => new Set(progress.done), [progress.done]);
   const { current, next } = upcoming(clue.rows, done, 3);
   const recent = useRef<string[]>([]);
+  const [checkIn, setCheckIn] = useState(false);
   const today = todayIso();
   const st = status(clue.rows, clue.total, done, { startDate: progress.start_date, days: progress.days }, today);
   const started = today >= progress.start_date;
@@ -53,6 +55,8 @@ function KnitBody({ clue, progress, update }: { clue: Clue; progress: Progress; 
         )}
       </div>
       <div className="bar" style={{ marginTop: 6 }}><span style={{ width: `${(st.done / clue.total) * 100}%` }} /></div>
+      <button className="btn" style={{ marginTop: 10, minHeight: 44 }} onClick={() => setCheckIn(true)}>Check in: I have knitted up to…</button>
+      {checkIn && <CheckIn clue={clue} progress={progress} update={update} onClose={() => setCheckIn(false)} />}
     </div>
   );
 
@@ -83,10 +87,7 @@ function KnitBody({ clue, progress, update }: { clue: Clue; progress: Progress; 
           {current.side && <span className="pill">{current.side}</span>}
           {current.sub && <span className="pill">{current.sub}</span>}
         </div>
-        <p style={{ margin: "8px 0 0" }}>
-          <Colour code={current.col} />
-          {current.stripe && <span className="muted"> · {current.stripe}{stripeLen ? `, row ${current.stripe_row} of ${stripeLen}` : ""}</span>}
-        </p>
+        <ColourBand code={current.col} detail={current.stripe ? `${current.stripe}${stripeLen ? `, row ${current.stripe_row} of ${stripeLen}` : ""}` : undefined} />
         <Counts r={current} />
         {current.rep_row != null && (
           <p className="small muted">

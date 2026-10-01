@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { CheckIn } from "../components/CheckIn";
 import { ClueGate } from "../components/ClueGate";
 import { Colour } from "../components/Format";
 import type { Clue, Progress, Row } from "../data/schema";
@@ -23,6 +24,7 @@ function SectionsBody({ clue, progress, update }: { clue: Clue; progress: Progre
   const done = useMemo(() => new Set(progress.done), [progress.done]);
   const [open, setOpen] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
+  const [checkIn, setCheckIn] = useState(false);
 
   // Stripe progress keyed by section + stripe name.
   const stripes = useMemo(() => {
@@ -40,7 +42,9 @@ function SectionsBody({ clue, progress, update }: { clue: Clue; progress: Progre
 
   return (
     <>
-      <p className="muted">Open a section to see its rows. Use “Tick up to here” if you have been knitting without the app.</p>
+      <p className="muted">Open a section to see its rows, or check in to say how far you have got.</p>
+      <button className="btn primary" style={{ marginBottom: 12 }} onClick={() => setCheckIn(true)}>Check in</button>
+      {checkIn && <CheckIn clue={clue} progress={progress} update={update} onClose={() => setCheckIn(false)} />}
       {clue.sections.map((s) => {
         const rows = bySection.get(s.name) ?? [];
         const n = count(rows, done);

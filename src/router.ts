@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 export type Route =
   | { name: "catalogue" }
   | { name: "plan" | "knit" | "sections"; clueId: string }
-  | { name: "settings" }
+  | { name: "settings"; mkalId?: string }
   | { name: "help" };
 
 export function parseHash(hash: string): Route {
@@ -13,7 +13,7 @@ export function parseHash(hash: string): Route {
     if (view === "knit" || view === "sections") return { name: view, clueId: parts[1] };
     return { name: "plan", clueId: parts[1] };
   }
-  if (parts[0] === "settings") return { name: "settings" };
+  if (parts[0] === "settings") return { name: "settings", mkalId: parts[1] };
   if (parts[0] === "help") return { name: "help" };
   return { name: "catalogue" };
 }
@@ -23,7 +23,7 @@ export const hrefFor = {
   plan: (id: string) => `#/clue/${encodeURIComponent(id)}/plan`,
   knit: (id: string) => `#/clue/${encodeURIComponent(id)}/knit`,
   sections: (id: string) => `#/clue/${encodeURIComponent(id)}/sections`,
-  settings: () => "#/settings",
+  settings: (mkalId?: string) => (mkalId ? `#/settings/${encodeURIComponent(mkalId)}` : "#/settings"),
   help: () => "#/help",
 };
 

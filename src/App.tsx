@@ -23,7 +23,7 @@ export function App() {
       break;
     case "settings":
       title = "Settings"; back = hrefFor.catalogue();
-      body = <Settings />;
+      body = <Settings initialMkal={route.mkalId} />;
       break;
     case "help":
       title = "Help"; back = hrefFor.catalogue();

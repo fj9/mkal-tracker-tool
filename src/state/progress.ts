@@ -3,6 +3,9 @@ import type { Clue, Progress } from "../data/schema";
 
 /** Settings kept beside progress on this device. */
 export interface Settings {
+  /** Colours per MKAL: mkal_id -> colour code -> name and swatch. */
+  mkalColours?: Record<string, Record<string, { name: string; hex: string }>>;
+  /** Older one-set-for-everything colours; still read as a fallback. */
   colourNames: Record<string, string>; // colour code -> user's name
   colourSwatches: Record<string, string>; // colour code -> #rrggbb
   lastBackedUp?: string; // ISO
@@ -164,14 +167,22 @@ export function newProgress(clue: Clue, today = todayIso()): Progress {
   };
 }
 
-/** Tick every row up to and including the chosen one (in row order); keeps existing ticks. */
-export function tickUpTo(clue: Clue, progress: Progress, rowId: string): Progress {
+/**
+ * Check in at a row: tick every row up to and including it (in row order), keeping existing
+ * ticks. With untickAfter, rows after it are unticked too, for when you have frogged back.
+ */
+export function setPlace(clue: Clue, progress: Progress, rowId: string, untickAfter = false): Progress {
   const idx = clue.rows.findIndex((r) => r.row_id === rowId);
   if (idx < 0) return progress;
   const done = new Set(progress.done);
-  for (let i = 0; i <= idx; i++) done.add(clue.rows[i].row_id);
+  clue.rows.forEach((r, i) => {
+    if (i <= idx) done.add(r.row_id);
+    else if (untickAfter) done.delete(r.row_id);
+  });
   return { ...progress, done: clue.rows.filter((r) => done.has(r.row_id)).map((r) => r.row_id), updated_at: new Date().toISOString() };
 }
+
+export const tickUpTo = (clue: Clue, progress: Progress, rowId: string): Progress => setPlace(clue, progress, rowId);
 
 export function setTicked(progress: Progress, rowId: string, ticked: boolean): Progress {
   const has = progress.done.includes(rowId);

@@ -2,7 +2,7 @@ import "fake-indexeddb/auto";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { Clue } from "../data/schema";
-import { createIndexedDbStore, newProgress, parseBackup, reconcile, setTicked, tickUpTo } from "./progress";
+import { createIndexedDbStore, newProgress, parseBackup, reconcile, setPlace, setTicked, tickUpTo } from "./progress";
 
 const clue: Clue = JSON.parse(
   readFileSync(new URL("../../content/clues/twists_turns_clue1_clue.public.json", import.meta.url), "utf8"),
@@ -36,6 +36,23 @@ describe("ticking", () => {
   it("tick up to here marks every row up to and including the chosen one, in order", () => {
     const p = tickUpTo(clue, setTicked(newProgress(clue), clue.rows[8].row_id, true), clue.rows[5].row_id);
     expect(p.done).toEqual(clue.rows.slice(0, 6).concat(clue.rows[8]).map((r) => r.row_id));
+  });
+});
+
+describe("setPlace (check in)", () => {
+  it("ticks everything up to the row and leaves later ticks alone by default", () => {
+    const start = setTicked(newProgress(clue), clue.rows[20].row_id, true);
+    const p = setPlace(clue, start, clue.rows[9].row_id);
+    expect(p.done).toEqual(clue.rows.slice(0, 10).concat(clue.rows[20]).map((r) => r.row_id));
+  });
+  it("can also untick rows after it, for when you have frogged back", () => {
+    const ticked = setPlace(clue, newProgress(clue), clue.rows[30].row_id);
+    const p = setPlace(clue, ticked, clue.rows[9].row_id, true);
+    expect(p.done).toEqual(clue.rows.slice(0, 10).map((r) => r.row_id));
+  });
+  it("ignores an unknown row", () => {
+    const p = newProgress(clue);
+    expect(setPlace(clue, p, "nope")).toBe(p);
   });
 });
 
