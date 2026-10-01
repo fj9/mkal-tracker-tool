@@ -1,4 +1,3 @@
-import type { Row } from "../data/schema";
 import { colourFor, colourLabel, readableInk } from "../lib/colours";
 import { hrefFor } from "../router";
 import { useSettings } from "../state/AppContext";
@@ -34,9 +33,4 @@ export function ColourBand({ code, detail }: { code: string; detail?: string }) 
       )}
     </div>
   );
-}
-
-export function rowLabel(r: Row): string {
-  const side = r.side ? ` ${r.side}` : "";
-  return `${r.sec.replace(/^Section \d+ - /, "")} · ${r.lab}${side}`;
 }

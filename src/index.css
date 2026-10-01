@@ -115,3 +115,8 @@ input.tick { width: 26px; height: 26px; accent-color: var(--good); vertical-alig
 .mkal-year { display: block; font-size: .85rem; font-weight: 600; letter-spacing: .08em; color: var(--accent); }
 .mkal-name { display: block; font-family: var(--font-display); font-size: 1.7rem; font-weight: 600; line-height: 1.15; margin: 2px 0 6px; }
 .mkal-chevron { font-size: 1.4rem; color: var(--accent); }
+
+.day-item { padding: 12px 10px; margin: 0 -10px; border-radius: 12px; }
+.day-item.is-today { background: var(--wash); box-shadow: inset 3px 0 0 var(--accent); }
+.day-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.day-section { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; }

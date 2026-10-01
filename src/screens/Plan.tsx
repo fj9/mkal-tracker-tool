@@ -1,7 +1,8 @@
 import { ClueGate } from "../components/ClueGate";
-import { Colour, num, rowLabel } from "../components/Format";
+import { Colour, num } from "../components/Format";
 import type { Clue, Progress } from "../data/schema";
 import { status, weekPlan } from "../lib/plan";
+import { rowPlace, rowWhere } from "../lib/rowText";
 import { hrefFor } from "../router";
 import { todayIso } from "../state/progress";
 
@@ -61,7 +62,7 @@ function PlanBody({ clue, progress, update, clueId }: { clue: Clue; progress: Pr
           </p>
         )}
         {started && st.toGo > 0 && st.rowByEndOfToday && (
-          <p className="small muted">{num(st.toGo)} to go today: that gets you to {rowLabel(st.rowByEndOfToday)}.</p>
+          <p className="small muted">{num(st.toGo)} to go today: that gets you to {rowPlace(st.rowByEndOfToday)}.</p>
         )}
         <div className="row" style={{ flexWrap: "wrap" }}>
           <a className="btn primary" href={hrefFor.knit(clueId)}>Go to Knit</a>
@@ -71,20 +72,31 @@ function PlanBody({ clue, progress, update, clueId }: { clue: Clue; progress: Pr
 
       <section className="card">
         <h2>Where to be</h2>
-        <table className="days">
-          <thead><tr><th>Day</th><th>Target</th><th>Be at</th></tr></thead>
-          <tbody>
-            {days.map((d) => (
-              <tr key={d.day} className={started && d.day === st.day ? "today" : undefined} aria-current={started && d.day === st.day ? "date" : undefined}>
-                <td>{d.day}<div className="small muted">{fmt(addDays(progress.start_date, d.day - 1))}</div></td>
-                <td>{num(d.target)}</td>
-                <td>
-                  {d.row ? (<>{rowLabel(d.row)}<div className="small"><Colour code={d.row.col} /></div></>) : "—"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <p className="small muted">The row to reach by the end of each day.</p>
+        <ul className="list">
+          {days.map((d, i) => {
+            const today = started && d.day === st.day;
+            const gained = d.target - (i > 0 ? days[i - 1].target : 0);
+            return (
+              <li key={d.day} className={`day-item${today ? " is-today" : ""}`} aria-current={today ? "date" : undefined}>
+                <div className="day-head">
+                  <strong>Day {d.day}</strong> <span className="muted small">{fmt(addDays(progress.start_date, d.day - 1))}{today ? " · today" : ""}</span>
+                  <span className="grow" />
+                  <span className="small muted">{num(d.target)} stitches in total (+{num(gained)})</span>
+                </div>
+                {d.row ? (
+                  <>
+                    <div className="day-section">{d.row.sec}</div>
+                    <div>{rowWhere(d.row)}</div>
+                    <div className="small muted">
+                      <Colour code={d.row.col} /> · row {d.row.actual_row.toLocaleString()} of {clue.rows.length.toLocaleString()}
+                    </div>
+                  </>
+                ) : <div className="muted">Not reached yet</div>}
+              </li>
+            );
+          })}
+        </ul>
       </section>
     </>
   );
