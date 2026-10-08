@@ -11,3 +11,5 @@ I don't get the clues early and I mostly knit along as each one is released, so 
 The first version of my trackers was adapted from Anne Reimer's (plaidnuthatch) Starflake MKAL tracker, and I'm very grateful for her work.
 
 Everything you tick stays on your device. I share the trackers and the MKAL stats on [Ravelry](https://www.ravelry.com/people/freyadknot) and [Instagram](https://www.instagram.com/freyaj9/), and the code lives on [GitHub](https://github.com/fj9) if you'd like to take a look.
+
+If you find it useful and fancy saying thanks, you can [tip me on Ko-fi](https://ko-fi.com/fjnine). It's entirely optional, and everything stays free either way.

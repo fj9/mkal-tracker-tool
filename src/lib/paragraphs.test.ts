@@ -9,13 +9,14 @@ describe("parseParagraphs", () => {
       [{ text: "Three." }],
     ]);
   });
-  it("the About copy links to Ravelry, Instagram and GitHub", () => {
+  it("the About copy links to Ravelry, Instagram, GitHub and Ko-fi", () => {
     const md = readFileSync(new URL("../../content/help/about.md", import.meta.url), "utf8");
     const hrefs = parseParagraphs(md).flat().flatMap((i) => (i.href ? [i.href] : []));
     expect(hrefs).toEqual([
       "https://www.ravelry.com/people/freyadknot",
       "https://www.instagram.com/freyaj9/",
       "https://github.com/fj9",
+      "https://ko-fi.com/fjnine",
     ]);
   });
 });

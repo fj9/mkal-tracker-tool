@@ -40,6 +40,7 @@ export function Layout({ route, title, back, children }: Props) {
             <a href="https://www.ravelry.com/people/freyadknot" target="_blank" rel="noopener noreferrer">Ravelry</a>
             <a href="https://www.instagram.com/freyaj9/" target="_blank" rel="noopener noreferrer">Instagram</a>
             <a href="https://github.com/fj9" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://ko-fi.com/fjnine" target="_blank" rel="noopener noreferrer">Tip me on Ko-fi</a>
           </div>
         </footer>
       </main>

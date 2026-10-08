@@ -2,7 +2,7 @@
 
 A free, just-for-fun progress tracker for mystery knit-alongs (MKALs). Pick a clue, tick off rows as you knit, and see where you should be each day. It works in the browser, installs to a phone's home screen, and keeps everything on your own device.
 
-Made by [Freya'd Knot](https://www.ravelry.com/people/freyadknot) ([Instagram](https://www.instagram.com/freyaj9/), [GitHub](https://github.com/fj9)). I'm not trying to sell anything; knitting isn't a race.
+Made by [Freya'd Knot](https://www.ravelry.com/people/freyadknot) ([Instagram](https://www.instagram.com/freyaj9/), [GitHub](https://github.com/fj9)). I'm not trying to sell anything; knitting isn't a race. If you'd like to say thanks, you can [tip me on Ko-fi](https://ko-fi.com/fjnine).
 
 ## What it does
 
