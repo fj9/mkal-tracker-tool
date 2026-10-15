@@ -5,6 +5,7 @@ import { Colour, ColourBand, num } from "../components/Format";
 import type { Clue, Progress, Row } from "../data/schema";
 import { MKAL_LINKS } from "../data/mkalLinks";
 import { indexRows, upcoming } from "../lib/rows";
+import { rowTitle, shortLab } from "../lib/rowText";
 import { status } from "../lib/plan";
 import { hrefFor } from "../router";
 import { setTicked, todayIso } from "../state/progress";
@@ -84,7 +85,7 @@ function KnitBody({ clue, progress, update }: { clue: Clue; progress: Progress; 
         <div className="small muted" id="now">Now knitting · row {current.actual_row} of {clue.rows.length}</div>
         <h2 style={{ marginTop: 4 }}>{current.sec}</h2>
         <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
-          <strong style={{ fontSize: "1.4rem" }}>Row {current.lab}</strong>
+          <strong style={{ fontSize: "1.4rem" }}>{rowTitle(current)}</strong>
           {current.side && <span className="pill">{current.side}</span>}
           {current.sub && <span className="pill">{current.sub}</span>}
         </div>
@@ -116,7 +117,7 @@ function KnitBody({ clue, progress, update }: { clue: Clue; progress: Progress; 
             {next.map((r) => (
               <li key={r.row_id} className="row" style={{ padding: "8px 0" }}>
                 <div className="grow">
-                  <strong>{r.lab}{r.side ? ` ${r.side}` : ""}</strong> <span className="small muted">{r.sec.replace(/^Section \d+ - /, "")}</span>
+                  <strong>{shortLab(r)}{r.side ? ` ${r.side}` : ""}</strong> <span className="small muted">{r.sub ?? r.sec.replace(/^Section \d+ - /, "")}</span>
                   <div className="small muted">start {r.sts_start}, work {r.sts_worked}, end {r.sts_end}</div>
                 </div>
                 <Colour code={r.col} />

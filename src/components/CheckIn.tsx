@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Clue, Progress, Row } from "../data/schema";
 import { aheadBehind, stitchesDone, targetAtEndOfDay, todayDayNumber } from "../lib/plan";
+import { rowTitle } from "../lib/rowText";
 import { setPlace, todayIso } from "../state/progress";
 import { num } from "./Format";
 
@@ -12,7 +13,7 @@ interface Props {
 }
 
 const optionLabel = (r: Row) =>
-  `Row ${r.lab}${r.side ? ` ${r.side}` : ""}${r.sub ? ` · ${r.sub}` : ""}${r.rep_pass ? ` · repeat ${r.rep_pass}` : ""}  (#${r.actual_row})`;
+  `${rowTitle(r)}${r.side ? ` ${r.side}` : ""}${r.sub ? ` · ${r.sub}` : ""}${r.rep_pass ? ` · repeat ${r.rep_pass}` : ""}  (#${r.actual_row})`;
 
 /**
  * "I have done everything up to here": pick a section and a row and tick all rows up to it,

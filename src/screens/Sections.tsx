@@ -3,6 +3,7 @@ import { ClueGate } from "../components/ClueGate";
 import { num } from "../components/Format";
 import type { Clue, Progress, Row } from "../data/schema";
 import { colourFor, readableInk } from "../lib/colours";
+import { rowTitle, shortLab } from "../lib/rowText";
 import { useSettings } from "../state/AppContext";
 import { useMkal } from "../state/MkalContext";
 import { setPlace, untickFrom } from "../state/progress";
@@ -126,12 +127,12 @@ function GridRow({ r, repeatStart, ticked, isHere, hereRef, selected, onSelect, 
       {repeatStart != null && <tr className="sub-row"><td colSpan={6}>Repeat {repeatStart}</td></tr>}
       <tr ref={hereRef} className={`${ticked ? "is-done" : ""}${isHere ? " is-here" : ""}`}>
         <td>
-          <button className="row-num" aria-expanded={selected} aria-label={`Row ${r.lab}${r.side ? ` ${r.side}` : ""}, options`} onClick={onSelect}>
-            {r.lab}<small>{r.side}</small>
+          <button className="row-num" aria-expanded={selected} aria-label={`${rowTitle(r)}${r.side ? ` ${r.side}` : ""}, options`} onClick={onSelect}>
+            {shortLab(r)}<small>{r.side}</small>
           </button>
         </td>
         <td>
-          <input type="checkbox" className="tick" checked={ticked} aria-label={`Row ${r.lab} done`} onChange={(e) => onTick(e.target.checked)} />
+          <input type="checkbox" className="tick" checked={ticked} aria-label={`${rowTitle(r)} done`} onChange={(e) => onTick(e.target.checked)} />
         </td>
         <td className="num-cell">{r.rep_row ?? ""}</td>
         <ColourCell code={r.col} />
